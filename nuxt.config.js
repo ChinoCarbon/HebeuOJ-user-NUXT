@@ -42,7 +42,7 @@ export default {
   ],
 
   axios: {
-    baseURL: "https://www.baidu.com"
+    baseURL: "http://localhost:8080"
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

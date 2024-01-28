@@ -51,7 +51,7 @@
               width="200"
               prop="pass,carry"
               label="通过/执行">
-              <template slot-scope="scope">
+              <template v-slot="scope">
                 {{scope.row.pass}}/{{scope.row.carry}}
               </template>
             </el-table-column>
@@ -87,33 +87,53 @@
 <script>
 export default {
   layout: 'SafariBar',
-  mounted() {
-    this.$axios.$get('/')
-      .then(response => {
-        console.log(response)
-      })
-  }
+  created() {
+    this.$axios.$post('/findAllByPages', {
+      "page" : 1,
+      "numPerPage" : 10,
+      "keyWord": ''
+    }).then(response => {
+        let json = response.list;//接受后端传输的json
+
+        console.log(response.data)
+        if (json == null) {
+          return;
+        }
+        this.tableData = []
+        for (let i in json) {
+          this.tableData.push({
+            id: json[i].problemId,
+            name: json[i].problemTitle,
+            pass: json[i].problemPassed,
+            carry: json[i].problemSubmitted,
+            link: "/problems",
+          })
+        }
+      }
+    )
+  },
   // eslint-disable-next-line vue/multi-word-component-names
   // name: "Problems",
-  // data() {
-  //   return {
-  //     //表格数据
-  //     tableData: [],
-  //     // 总条数
-  //     total:0 ,
-  //     //每页的条目个数
-  //     pagesize:12,
-  //     //显示的页数
-  //     page:1,
-  //     //搜索关键字
-  //     key:'',
-  //     status:'',
-  //     //搜索框输入的数
-  //     input:'',
-  //     process_status:'',
-  //     localhostPath: ''
-  //   }
-  // }, created() {
+  data() {
+    return {
+      //表格数据
+      tableData: [],
+      // 总条数
+      total:0 ,
+      //每页的条目个数
+      pagesize:12,
+      //显示的页数
+      page:1,
+      //搜索关键字
+      key:'',
+      status:'',
+      //搜索框输入的数
+      input:'',
+      process_status:'',
+      localhostPath: ''
+    }
+  },
+  //created() {
   //   let wPath = window.document.location.href;
   //   // 获取当前页面主机地址之后的目录，如：/admin/index
   //   let pathName =  this.$route.path;
