@@ -178,9 +178,7 @@ export default {
     },
   getArticle() {
         this.getInformation();
-        this.$axios.post("/problemsH/", {
-          problemId: this.$route.params.id
-        })
+        this.$axios.get("/problemsH/" + this.$route.params.id)
           .then((url) => {
             console.log(url.data)
           this.article = url.data
