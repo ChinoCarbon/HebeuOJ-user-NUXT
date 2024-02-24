@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-row>
-      <el-col :span="12">
+    <el-row style="height: 99vh; min-width: 1200px">
+      <el-col :span="12" style="height: 100%; overflow-y: scroll">
         <div style="background-color: #69bff8; padding: 30px; border-top: white 1px solid">
           <h1 style="color: white"> Problem{{ this.$route.params.id }} &nbsp;&nbsp;&nbsp;{{ problem.problemTitle }}</h1>
         </div>
@@ -60,11 +60,10 @@
           :toolbars-flag="false"
         />
       </el-col>
-      <el-col :span="12">
-
+      <el-col :span="12" style="height: 100%; display: flex; flex-direction: column">
         <code-editor :cm-mode="selectedValue" :cm-theme="'monokai'"/>
         <el-row>
-          <el-col :offset="8">
+          <el-col :offset="8" :span="16">
             选择语言
             <el-select v-model="selectedValue" placeholder="语言类型">
               <el-option
@@ -144,9 +143,6 @@ export default {
 
   },
   methods: {
-    changes() {
-      console.log("code change")
-    },
     submit() {
       this.isSubmiting = true
       this.$axios.post(
@@ -169,22 +165,18 @@ export default {
       this.$axios.post('problem/getProblemInformation',
         {
           problemId: this.$route.params.id
-        }).then((resp) => {
-        this.problem = resp.data;
+        }).then((response) => {
+        this.problem = response.data.data.information;
         console.log(this.problem)
       })
     },
     getArticle() {
       this.getInformation();
       this.$axios.get("problem/problemContent/" + this.$route.params.id)
-        .then((url) => {
-          console.log(url.data)
-          this.article = url.data
+        .then((response) => {
+          this.article = response.data.data.content
         })
     }
-  },
-  deactivated() {
-    console.log("asdasfa s")
   },
   computed: {
     codemirror() {
@@ -194,7 +186,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 
 
 </style>
