@@ -1,11 +1,10 @@
 <template>
   <div>
-    <div class="menu">
+    <div class="menu" :style="menuStyle">
       <el-menu
         :default-active="activeIndex"
         class="el-menu-demo"
         mode="horizontal"
-        @select="handleSelect"
         background-color="#ffffff00"
         :router="true">
         <li class="title">
@@ -32,24 +31,20 @@ export default {
   data() {
     return {
       activeIndex: '4',
+      menuStyle: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        'z-index': 1000,
+      }
     };
   },
-  methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath);
-    }
-  }
 }
 </script>
 
 <style>
-.menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-}
+
 .el-menu--horizontal>.el-submenu .el-submenu__title {
   height: 80px;
   line-height: 80px;

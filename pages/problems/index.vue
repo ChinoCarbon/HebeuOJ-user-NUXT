@@ -7,20 +7,28 @@
       <el-main align="center">
         <!--搜索框-->
         <div align="center">
-          <div class="search-box" align="center" >
+          <div class="search-box" align="center">
             <el-row>
               <el-col :span="2" :offset="1"><h3>查找题目</h3></el-col>
-              <el-col :span="8"><h3>
-                <el-input
-                  style="width: 95%"
-                  placeholder="请输入题号或题目名称"
-                  v-model="input"
-                  clearable>
-                </el-input></h3></el-col>
-              <el-col :span="1" ><h3><el-button @click="search" type="primary">搜索</el-button></h3></el-col>
+              <el-col :span="8">
+                <h3>
+                  <el-input
+                    style="width: 95%"
+                    placeholder="请输入题号或题目名称"
+                    v-model="input"
+                    clearable>
+                  </el-input>
+                </h3>
+              </el-col>
+              <el-col :span="1">
+                <h3>
+                  <el-button @click="search" type="primary">搜索</el-button>
+                </h3>
+              </el-col>
             </el-row>
           </div>
-        </div><br/>
+        </div>
+        <br/>
         <!--题目表格-->
         <div align="center" class="table-box">
           <el-table :data="tableData"
@@ -41,8 +49,10 @@
               prop="name"
               width="300">
               <template slot-scope="scope">
-                <div slot="reference" class="name-wrapper" >
-                  <el-link size="medium" style="font-size: 20px" type="primary" :href="scope.row.link + '/' + scope.row.id">{{ scope.row.name }}</el-link>
+                <div slot="reference" class="name-wrapper">
+                  <el-link size="medium" style="font-size: 20px" type="primary"
+                           :href="scope.row.link + '/' + scope.row.id">{{ scope.row.name }}
+                  </el-link>
                 </div>
               </template>
             </el-table-column>
@@ -52,7 +62,7 @@
               prop="pass,carry"
               label="通过/执行">
               <template v-slot="scope">
-                {{scope.row.pass}}/{{scope.row.carry}}
+                {{ scope.row.pass }}/{{ scope.row.carry }}
               </template>
             </el-table-column>
             <el-table-column
@@ -60,7 +70,11 @@
               width="300"
               label="通过率">
               <template slot-scope="scope">
-                <el-progress :text-inside="true"  v-if="(scope.row.pass/scope.row.carry)" :stroke-width="20" :status="(scope.row.process_status)|statusFilter((scope.row.pass/scope.row.carry))" :percentage="(scope.row.pass/scope.row.carry)| numFilter"></el-progress>
+                <el-progress :text-inside="true" v-if="(scope.row.pass/scope.row.carry)" :stroke-width="20"
+                             :status="(scope.row.process_status) | statusFilter((scope.row.pass/scope.row.carry))"
+                             :percentage="(scope.row.pass/scope.row.carry) | numFilter">
+
+                </el-progress>
               </template>
 
             </el-table-column>
@@ -87,15 +101,67 @@
 <script>
 export default {
   layout: 'SafariBar',
+  // eslint-disable-next-line vue/multi-word-component-names
+  // name: "Problems",
+  data() {
+    return {
+      //表格数据
+      tableData: [],
+      // 总条数
+      total: 0,
+      //每页的条目个数
+      pagesize: 12,
+      //显示的页数
+      page: 1,
+      //搜索关键字
+      key: '',
+      status: '',
+      //搜索框输入的数
+      input: '',
+      process_status: '',
+      localhostPath: ''
+    }
+  },
   created() {
-    this.$axios.$post('/findAllByPages', {
-      "page" : 1,
-      "numPerPage" : 10,
-      "keyWord": ''
-    }).then(response => {
-        let json = response.list;//接受后端传输的json
+    let wPath = window.document.location.href;
+    // 获取当前页面主机地址之后的目录，如：/admin/index
+    let pathName = this.$route.path;
+    let pos = wPath.indexOf(pathName);
+    // 获取主机地址，如：http://localhost:8080
+    this.localhostPath = wPath.substring(0, pos);
 
-        console.log(response.data)
+    this.getData(1, 10, this.input)
+  },
+
+  methods: {
+    // 换页
+    handleCurrentChange(val) {
+      this.page = val
+      this.getData(this.page, 10, this.input)
+    },
+    //搜索
+    search() {
+      this.page = 1
+      this.key = this.input;
+      this.getData(this.page, 10, this.input)
+    },
+    //分页全局查询
+    getData(page, num, keyWord) {
+      let url = 'findAllByPages'
+      if(keyWord !== '') {
+        url = 'findLikeByPages'
+        console.log("keyword" + keyWord)
+      }
+      this.$axios.$post('/problem/' + url,
+        {
+          page: this.page,//当前页数
+          numPerPage: this.pagesize, //每页条数
+          keyWord: keyWord
+        }
+      ).then((response) => {
+        //this.tableData=[];
+        let json = response.data.listInformation.list;//接受后端传输的json
+        console.log(json)
         if (json == null) {
           return;
         }
@@ -107,158 +173,39 @@ export default {
             pass: json[i].problemPassed,
             carry: json[i].problemSubmitted,
             link: "/problems",
-          })
+          });
         }
-      }
-    )
+        //获取信息总数
+        this.total = response.data.listInformation.total;
+        this.status = "全局";
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
   },
-  // eslint-disable-next-line vue/multi-word-component-names
-  // name: "Problems",
-  data() {
-    return {
-      //表格数据
-      tableData: [],
-      // 总条数
-      total:0 ,
-      //每页的条目个数
-      pagesize:12,
-      //显示的页数
-      page:1,
-      //搜索关键字
-      key:'',
-      status:'',
-      //搜索框输入的数
-      input:'',
-      process_status:'',
-      localhostPath: ''
+  filters: {
+    numFilter(value) {
+      // 截取当前数据到小数点后两位
+      let realVal = parseFloat((value * 100)).toFixed(2);
+      realVal = realVal * 1;
+      return realVal;
+    },
+    statusFilter(value, num) {
+      let numVal = parseFloat((num * 100)).toFixed(2);
+      numVal = numVal * 1;
+      let realVal = "";
+      if (numVal >= 90) {
+        realVal = "success";
+      } else if (numVal >= 80) {
+        realVal = null;
+      } else if (numVal >= 60) {
+        realVal = "warning";
+      } else {
+        realVal = "exception"
+      }
+      return realVal;
     }
   },
-  //created() {
-  //   let wPath = window.document.location.href;
-  //   // 获取当前页面主机地址之后的目录，如：/admin/index
-  //   let pathName =  this.$route.path;
-  //   let pos = wPath.indexOf(pathName);
-  //   // 获取主机地址，如：http://localhost:8080
-  //   this.localhostPath = wPath.substring(0, pos);
-  // },
-  //
-  // methods:{
-  //   // 换页
-  //   handleCurrentChange(val) {
-  //     this.page=val;
-  //     if(this.status === "全局"){
-  //       this.getData()
-  //     }else{
-  //       this.getDataLike()
-  //     }
-  //   },
-  //   //搜索
-  //   search(){
-  //     this.page = 1
-  //     this.key=this.input;
-  //     this.getDataLike();
-  //   },
-  //   //分页全局查询
-  //   getData(){
-  //     axios.post(this.localhostPath + '/findAllByPages',
-  //       {
-  //         page:this.page,//当前页数
-  //         numPerPage:this.pagesize//每页条数
-  //       }
-  //     ).then( (response) => {
-  //       //this.tableData=[];
-  //       let json = response.data.list;//接受后端传输的json
-  //
-  //       console.log(response.data)
-  //       if(json==null){
-  //         return ;
-  //       }
-  //       this.tableData = []
-  //       for(let i in json){
-  //         this.tableData.push({
-  //           id:json[i].problemId,
-  //           name:json[i].problemTitle,
-  //           pass:json[i].problemPassed,
-  //           carry:json[i].problemSubmitted,
-  //           link:"/problems",
-  //         });
-  //       }
-  //       //获取信息总数
-  //       this.total=response.data.total;
-  //       this.status="全局";
-  //     }).catch((error) => {
-  //       console.log(error)
-  //     })
-  //   },
-  //   //分页模糊查询
-  //   getDataLike(){
-  //     if(this.key === "")
-  //     {
-  //       this.getData();
-  //       return;
-  //     }
-  //     axios.post(this.localhostPath + '/findLikeByPages',
-  //       {
-  //         keyWord:this.key,//关键词
-  //         page:this.page,//当前页数
-  //         numPerPage:this.pagesize//每页条数
-  //       }
-  //     ).then((response) => {
-  //       this.tableData = [];
-  //       let json = response.data.list;//接受后端传输的json
-  //       if(json==null){
-  //         return ;
-  //       }
-  //       for(let i in json){
-  //         this.tableData.push({
-  //           id:json[i].problemId,
-  //           name:json[i].problemTitle,
-  //           pass:json[i].problemPassed,
-  //           carry:json[i].problemSubmitted,
-  //           link:"/problem",
-  //         });
-  //       }
-  //       //获取信息总数
-  //       if(this.key === ""){
-  //         this.total=response.data.endRow;
-  //         this.status="全局";
-  //       }else {
-  //         this.total=response.data.total;
-  //         this.status="搜索";
-  //       }
-  //     })},
-  // },
-  // filters: {
-  //   numFilter (value) {
-  //     // 截取当前数据到小数点后两位
-  //     let realVal = parseFloat((value*100)).toFixed(2);
-  //     realVal= realVal*1;
-  //     return realVal;
-  //   },
-  //   statusFilter(value,num){
-  //     let numVal = parseFloat((num*100)).toFixed(2);
-  //     numVal = numVal*1;
-  //     let realVal = "";
-  //     if(numVal>=90){
-  //       realVal="success";
-  //     }else if (numVal>=80){
-  //       realVal=null;
-  //     }else if(numVal>=60){
-  //       realVal="warning";
-  //     }else {
-  //       realVal="exception"
-  //     }
-  //     return realVal;
-  //   }
-  //
-  // },
-  // //钩子函数
-  // beforeRouteEnter: (to, from, next) => {
-  //   console.log("组件加载之前");
-  //   next(vm => {
-  //     vm.getData();
-  //   });
-  // },
 }
 
 </script>
@@ -280,18 +227,20 @@ export default {
   line-height: 30px;
 }
 
-.home{
+.home {
   position: absolute;
-  top:100px;
+  top: 100px;
   left: 0;
   width: 100%;
   height: 100%;
 }
-.el-table{
-  font-size:20px;
+
+.el-table {
+  font-size: 20px;
   line-height: 40px;
 }
-.search-box{
+
+.search-box {
   width: 1120px;
   height: 60px;
   background-color: #FFFFFF;
@@ -304,11 +253,12 @@ export default {
   /*边框弧度*/
   border-radius: 5px;
   /*阴影设置*/
-  box-shadow: 0px 0px 10px  #DCDFE6;
+  box-shadow: 0px 0px 10px #DCDFE6;
 }
-.table-box{
+
+.table-box {
   width: 1180px;
-  height:530px;
+  height: 530px;
   background-color: #FFFFFF;
   /*标签位置*/
   margin: auto;

@@ -8,6 +8,9 @@ export default {
     htmlAttrs: {
       lang: 'en'
     },
+    bodyAttrs: {
+      style: 'margin: 0;'
+    },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -22,13 +25,15 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     'element-ui/lib/theme-chalk/index.css',
-    'mavon-editor/dist/css/index.css'
+    'mavon-editor/dist/css/index.css',
+    'codemirror/lib/codemirror.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '@/plugins/element-ui',
-    '@/plugins/mavon-editor'
+    '@/plugins/mavon-editor',
+    '@/plugins/code-mirror'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

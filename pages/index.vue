@@ -62,8 +62,8 @@ h5 {
 .hello {
   width: 100vw;
   height: 100vh;
-  min-width: 1800px;
-  min-height: 900px;
+  min-width: 1700px;
+  min-height: 800px;
   overflow-y: hidden;
   position: relative;
 }
