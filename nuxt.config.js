@@ -9,7 +9,7 @@ export default {
       lang: 'en'
     },
     bodyAttrs: {
-      style: 'margin: 0;'
+      style: ['margin: 0;','font-family:PingFang SC']
     },
     meta: [
       { charset: 'utf-8' },
@@ -26,14 +26,15 @@ export default {
   css: [
     'element-ui/lib/theme-chalk/index.css',
     'mavon-editor/dist/css/index.css',
-    'codemirror/lib/codemirror.css'
+    'codemirror/lib/codemirror.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '@/plugins/element-ui',
     '@/plugins/mavon-editor',
-    '@/plugins/code-mirror'
+    '@/plugins/code-mirror',
+    '@/plugins/axios',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

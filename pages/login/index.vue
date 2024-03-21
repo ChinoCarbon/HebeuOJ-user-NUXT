@@ -117,6 +117,8 @@ export default {
       ).then((response) => {
         console.log(response)
         if(response.code === 20000) {
+          localStorage.setItem("token", response.message)
+          localStorage.setItem('user', JSON.stringify(response.data.user))
           this.$router.push("/")
         } else
         {

@@ -67,10 +67,10 @@ import "codemirror/theme/monokai.css"
 export default {
   components: {codemirror},
   name: 'index',
-  props: ["cmTheme", "cmMode", "cmIndentUnit", "autoFormatJson"],
+  props: ["cmTheme", "cmMode", "cmIndentUnit", "autoFormatJson", "code", "readOnly"],
   data() {
     return {
-      editorValue: '',
+      editorValue: this.code,
       cmOptions: {
         // theme: !this.cmTheme || this.cmTheme === "default" ? "default" : this.cmTheme,  // 主题
         mode: !this.cmMode || this.cmMode === "default" ? "application/json" : this.cmMode,  // 代码格式
@@ -81,8 +81,9 @@ export default {
         lint: true,  // 检查格式
         lineNumbers: true,  //是否显示行数
         lineWrapping: true, //是否自动换行
-        styleActiveLine: true,  //line选择是是否高亮
-        keyMap: 'sublime',  // sublime编辑器效果
+        styleActiveLine: !this.readOnly,  //line选择是是否高亮
+        keyMap: 'sublime',  // sublime编辑器效果,
+        readOnly: this.readOnly,
         matchBrackets: true,  //括号匹配
         autoCloseBrackets: true,  // 在键入时将自动关闭括号和引号
         matchTags: { bothTags: true },  // 将突出显示光标周围的标签
@@ -203,6 +204,6 @@ export default {
   /*          ^
   */
   font-family: Consolas, monospace;
-  font-size: 25px;
+  font-size: 20px;
 }
 </style>

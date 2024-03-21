@@ -1,0 +1,11 @@
+/* assets/fonts.css */
+
+@font-face {
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  font-weight: normal;
+  font-style: normal;
+}
+
+h5 {
+  font-size: 50px;
+}

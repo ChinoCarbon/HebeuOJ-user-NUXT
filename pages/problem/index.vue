@@ -15,7 +15,7 @@
               <i class="el-icon-user"></i>
               时间限制
             </slot>
-            1.0s
+            {{problem.problemTimeLimit}}
           </el-descriptions-item>
           <el-descriptions-item>
             <slot slot="label">

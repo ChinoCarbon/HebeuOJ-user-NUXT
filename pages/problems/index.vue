@@ -152,7 +152,7 @@ export default {
         url = 'findLikeByPages'
         console.log("keyword" + keyWord)
       }
-      this.$axios.$post('/problem/' + url,
+      this.$axios.$post('problem/' + url,
         {
           page: this.page,//当前页数
           numPerPage: this.pagesize, //每页条数

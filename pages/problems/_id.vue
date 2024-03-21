@@ -61,7 +61,7 @@
         />
       </el-col>
       <el-col :span="12" style="height: 100%; display: flex; flex-direction: column">
-        <code-editor :cm-mode="selectedValue" :cm-theme="'monokai'"/>
+        <code-editor ref="editor" :cm-mode="editorStyle" :cm-theme="'monokai'" :read-only="false"/>
         <el-row>
           <el-col :offset="8" :span="16">
             选择语言
@@ -104,26 +104,26 @@ export default {
     return {
       article: '',
       title: '标题',
-      code: '#include\n console.log(123)',
+      code: '',
       problem: {
         problemContent: '',
         problemTitle: ''
       },
       isSubmiting: false,
       options: [{
-        value: 'text/x-csrc',
+        value: '1',
         label: 'C'
       }, {
-        value: 'text/x-c++src',
+        value: '2',
         label: 'C++'
       }, {
-        value: 'text/x-java',
+        value: '3',
         label: 'Java'
       },{
-        value: 'python',
+        value: '4',
         label: 'Python3'
       }],
-      selectedValue: 'python',
+      selectedValue: '4',
       localhostPath: '',
 
     }
@@ -145,19 +145,20 @@ export default {
   methods: {
     submit() {
       this.isSubmiting = true
+      const judgeData = {
+        problemId: this.$route.params.id,
+        userId: JSON.parse(localStorage.getItem('user')).userId,
+        code: this.$refs.editor.editorValue,
+        languageType: this.selectedValue
+      }
       this.$axios.post(
-        '/getJudgementId',
-        {
-          problemId: this.$route.params.id,
-          userId: JSON.parse(localStorage.getItem("user")).userId,
-          code: this.code,
-          languageType: this.selectedValue
-        }
+        'judge/getJudgementId',
+        judgeData
       ).then((data) => {
         console.log(data)
         localStorage.setItem("code", this.code)
         this.isSubmiting = false
-        this.$router.push("/judgement/" + data.data)
+        this.$router.push({path: "/judgement/" + data.data, query: {judgeData: judgeData}})
       })
     },
     getInformation() {
@@ -181,6 +182,15 @@ export default {
   computed: {
     codemirror() {
       return this.$refs.cm.codemirror
+    },
+    editorStyle() {
+      const mapNumToStyle = {
+        '1': 'text/x-csrc',
+        '2': 'text/x-c++src',
+        '3': 'text/x-java',
+        '4': 'python'
+      }
+      return mapNumToStyle[this.selectedValue]
     }
   }
 }
